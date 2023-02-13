@@ -14,19 +14,19 @@ public class Square{
       throw new IllegalArgumentException("error: square requires exactly 2 characters");
     }
 
-    char rowChar = Character.toUpperCase(descr.charAt(0));
-    char colChar = Character.toUpperCase(descr.charAt(1));
+    char rowChar = Character.toUpperCase(descr.charAt(1));
+    char colChar = Character.toUpperCase(descr.charAt(0));
 
-    if(rowChar < 'A' || rowChar > 'Z'){
-      throw new IllegalArgumentException("error: character \'" + rowChar + "\' is not a valid row");
+    if(colChar < 'A' || colChar > 'Z'){
+      throw new IllegalArgumentException("error: character \'" + colChar + "\' is not a valid column");
     }
 
-    if(!Character.isDigit(colChar)){
+    if(!Character.isDigit(rowChar)){
       throw new IllegalArgumentException("error: character \'" + rowChar + "\' is not a valid column");
     }
 
-    this.row = rowChar - 'A';
-    this.column = Character.getNumericValue(colChar);
+    this.column = colChar - 'A' + 1;
+    this.row = Character.getNumericValue(rowChar);
   }
 
   public int getRow(){
@@ -53,6 +53,6 @@ public class Square{
 
   @Override
   public String toString() {
-    return (char)(this.row + 'a') + Integer.toString(this.column);
+    return (char)(this.column + 'a' - 1) + Integer.toString(this.row);
   }
 }

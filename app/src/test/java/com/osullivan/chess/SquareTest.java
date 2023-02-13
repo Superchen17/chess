@@ -21,16 +21,20 @@ public class SquareTest {
   @Test
   public void test_constructor_string_valid(){
     Square square1 = new Square("A1");
-    assertEquals(0, square1.getRow());
     assertEquals(1, square1.getColumn());
+    assertEquals(1, square1.getRow());
 
     Square square2 = new Square("D5");
-    assertEquals(3, square2.getRow());
-    assertEquals(5, square2.getColumn());
+    assertEquals(4, square2.getColumn());
+    assertEquals(5, square2.getRow());
 
     Square square3 = new Square("Z7");
-    assertEquals(25, square3.getRow());
-    assertEquals(7, square3.getColumn());
+    assertEquals(26, square3.getColumn());
+    assertEquals(7, square3.getRow());
+
+    Square square4 = new Square("a1");
+    assertEquals(1, square4.getColumn());
+    assertEquals(1, square4.getRow());
   }
 
   @Test
@@ -65,12 +69,12 @@ public class SquareTest {
 
   @Test
   public void test_toString() {
-    Square square1 = new Square(1, 2);
-    Square square2 = new Square(0, 5);
+    Square square1 = new Square(2, 1);
+    Square square2 = new Square(5, 2);
     Square square3 = new Square("a1");
 
-    assertEquals("b2", square1.toString());
-    assertEquals("a5", square2.toString());
+    assertEquals("a2", square1.toString());
+    assertEquals("b5", square2.toString());
     assertEquals("a1", square3.toString());
   }
 
