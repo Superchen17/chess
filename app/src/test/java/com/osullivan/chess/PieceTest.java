@@ -219,4 +219,204 @@ public class PieceTest {
     expectedSquares.add(new Square("g1"));
     this.helper_test_canMoveAnyDirTo_ownPieceBlocking(p, "h1", expectedSquares, (b)->p.canMoveRightTo(b));
   }
+
+  @Test
+  public void test_canMoveRightTo_enemyPieceBlocking(){
+    Piece p = new Rook("R", true, new Square("c2"), true);
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("d2"));
+    expectedSquares.add(new Square("e2"));
+    expectedSquares.add(new Square("f2"));
+    expectedSquares.add(new Square("g2"));
+    this.helper_test_canMoveAnyDirTo_enemyPieceBlocking(p, "g2", expectedSquares, (b)->p.canMoveRightTo(b));
+  }
+
+  /**
+   * -----------------------------------------------------------------------------------------------
+   * canMoveUpLeftDiagonalTo
+   * -----------------------------------------------------------------------------------------------
+   */
+  @Test
+  public void test_canMoveUpLeftDiagonalTo_cleanPath(){
+    Piece p = new Bishop("B", true, new Square("d4"));
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    b.tryAddPiece(p);
+
+    HashSet<Square> actualSquares = p.canMoveUpLeftDiagonalTo(b);
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("c5"));
+    expectedSquares.add(new Square("b6"));
+    expectedSquares.add(new Square("a7"));
+
+    assertEquals(expectedSquares, actualSquares);
+  }
+
+  @Test
+  public void test_canMoveUpLeftDiagonalTo_alreadyOnEdge(){
+    Piece p = new Bishop("B", true, new Square("a8"));
+    this.helper_test_canMoveAnyDirTo_onEdge(p, (b)->p.canMoveUpLeftDiagonalTo(b));
+  }
+
+  @Test
+  public void test_canMoveUpLeftDiagonalTo_ownPieceBlocking(){
+    Piece p = new Bishop("B", true, new Square("e3"));
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("d4"));
+    expectedSquares.add(new Square("c5"));
+    this.helper_test_canMoveAnyDirTo_ownPieceBlocking(p, "b6", expectedSquares, (b)->p.canMoveUpLeftDiagonalTo(b));
+  }
+
+  @Test
+  public void test_canMoveUpLeftDiagonalTo_enemyPieceBlocking(){
+    Piece p = new Bishop("B", true, new Square("e3"));
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("d4"));
+    expectedSquares.add(new Square("c5"));
+    expectedSquares.add(new Square("b6"));
+    this.helper_test_canMoveAnyDirTo_enemyPieceBlocking(p, "b6", expectedSquares, (b)->p.canMoveUpLeftDiagonalTo(b));
+  }
+
+  /**
+   * -----------------------------------------------------------------------------------------------
+   * canMoveUpRightDiagonalTo
+   * -----------------------------------------------------------------------------------------------
+   */
+  @Test
+  public void test_canMoveUpRightDiagonalTo_clearPath() {
+    Piece p = new Bishop("B", true, new Square("d4"));
+    HashSet<Piece> existingPieces = new HashSet<>();
+    existingPieces.add(new Rook("R", true, new Square("b5"), true));
+    Board b = new ChessBoard(8, 8, existingPieces);
+    b.tryAddPiece(p);
+
+    HashSet<Square> actualSquares = p.canMoveUpRightDiagonalTo(b);
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("e5"));
+    expectedSquares.add(new Square("f6"));
+    expectedSquares.add(new Square("g7"));
+    expectedSquares.add(new Square("h8"));
+
+    assertEquals(expectedSquares, actualSquares);
+  }
+
+  @Test
+  public void test_canMoveUpRightDiagonalTo_alreadyOnEdge(){
+    Piece p = new Bishop("B", true, new Square("h8"));
+    this.helper_test_canMoveAnyDirTo_onEdge(p, (b)->p.canMoveUpRightDiagonalTo(b));
+  }
+
+  @Test
+  public void test_canMoveUpRightDiagonalTo_ownPieceBlocking(){
+    Piece p = new Bishop("B", true, new Square("d1"));
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("e2"));
+    expectedSquares.add(new Square("f3"));
+    expectedSquares.add(new Square("g4"));
+    this.helper_test_canMoveAnyDirTo_ownPieceBlocking(p, "h5", expectedSquares, (b)->p.canMoveUpRightDiagonalTo(b));
+  }
+
+  @Test
+  public void test_canMoveUpRightDiagonalTo_enemyPieceBlocking(){
+    Piece p = new Bishop("B", true, new Square("d1"));
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("e2"));
+    expectedSquares.add(new Square("f3"));
+    expectedSquares.add(new Square("g4"));
+    this.helper_test_canMoveAnyDirTo_enemyPieceBlocking(p, "g4", expectedSquares, (b)->p.canMoveUpRightDiagonalTo(b));
+  }
+
+  
+  /**
+   * -----------------------------------------------------------------------------------------------
+   * canMoveUpRightDiagonalTo
+   * -----------------------------------------------------------------------------------------------
+   */
+  @Test
+  public void test_canMoveDownLeftDiagonalTo_clearPath() {
+    Piece p = new Bishop("B", true, new Square("d4"));
+    HashSet<Piece> existingPieces = new HashSet<>();
+    existingPieces.add(new Rook("R", true, new Square("c2"), true));
+    Board b = new ChessBoard(8, 8, existingPieces);
+    b.tryAddPiece(p);
+
+    HashSet<Square> actualSquares = p.canMoveDownLeftDiagonalTo(b);
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("a1"));
+    expectedSquares.add(new Square("b2"));
+    expectedSquares.add(new Square("c3"));
+
+    assertEquals(expectedSquares, actualSquares);
+  }
+
+  @Test
+  public void test_canMoveDownLeftDiagonalTo_alreadyOnEdge(){
+    Piece p = new Bishop("B", true, new Square("a1"));
+    this.helper_test_canMoveAnyDirTo_onEdge(p, (b)->p.canMoveDownLeftDiagonalTo(b));
+  }
+
+  @Test
+  public void test_canMoveDownLeftDiagonalTo_ownPieceBlocking(){
+    Piece p = new Bishop("B", true, new Square("e6"));
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("c4"));
+    expectedSquares.add(new Square("d5"));
+    this.helper_test_canMoveAnyDirTo_ownPieceBlocking(p, "b3", expectedSquares, (b)->p.canMoveDownLeftDiagonalTo(b));
+  }
+
+  @Test
+  public void test_canMoveDownLeftDiagonalTo_enemyPieceBlocking(){
+    Piece p = new Bishop("B", true, new Square("e6"));
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("b3"));
+    expectedSquares.add(new Square("c4"));
+    expectedSquares.add(new Square("d5"));
+    this.helper_test_canMoveAnyDirTo_enemyPieceBlocking(p, "b3", expectedSquares, (b)->p.canMoveDownLeftDiagonalTo(b));
+  }
+
+  /**
+   * -----------------------------------------------------------------------------------------------
+   * canMoveUpRightDiagonalTo
+   * -----------------------------------------------------------------------------------------------
+   */
+  @Test
+  public void test_canMoveDownRightDiagonalTo_clearPath() {
+    Piece p = new Bishop("B", true, new Square("d4"));
+    HashSet<Piece> existingPieces = new HashSet<>();
+    existingPieces.add(new Rook("R", true, new Square("e2"), true));
+    Board b = new ChessBoard(8, 8, existingPieces);
+    b.tryAddPiece(p);
+
+    HashSet<Square> actualSquares = p.canMoveDownRightDiagonalTo(b);
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("e3"));
+    expectedSquares.add(new Square("f2"));
+    expectedSquares.add(new Square("g1"));
+
+    assertEquals(expectedSquares, actualSquares);
+  }
+
+  @Test
+  public void test_canMoveDownRightDiagonalTo_alreadyOnEdge(){
+    Piece p = new Bishop("B", true, new Square("h1"));
+    this.helper_test_canMoveAnyDirTo_onEdge(p, (b)->p.canMoveDownRightDiagonalTo(b));
+  }
+
+  @Test
+  public void test_canMoveDownRightDiagonalTo_ownPieceBlocking(){
+    Piece p = new Bishop("B", true, new Square("d5"));
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("e4"));
+    expectedSquares.add(new Square("f3"));
+    this.helper_test_canMoveAnyDirTo_ownPieceBlocking(p, "g2", expectedSquares, (b)->p.canMoveDownRightDiagonalTo(b));
+  }
+
+  @Test
+  public void test_canMoveDownRightDiagonalTo_enemyPieceBlocking(){
+    Piece p = new Bishop("B", true, new Square("d5"));
+    HashSet<Square> expectedSquares = new HashSet<>();
+    expectedSquares.add(new Square("e4"));
+    expectedSquares.add(new Square("f3"));
+    expectedSquares.add(new Square("g2"));
+    this.helper_test_canMoveAnyDirTo_enemyPieceBlocking(p, "g2", expectedSquares, (b)->p.canMoveDownRightDiagonalTo(b));
+  }
 }

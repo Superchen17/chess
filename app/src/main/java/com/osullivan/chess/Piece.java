@@ -111,6 +111,12 @@ public abstract class Piece {
     return nextMoves;
   }
 
+  /**
+   * check where the piece can move right in a straight line
+   * used for Rook and Queen
+   * @param board
+   * @return
+   */
   protected HashSet<Square> canMoveRightTo(Board board){
     HashSet<Square> nextMoves = new HashSet<>();
     int currRow = this.square.getRow();
@@ -124,7 +130,103 @@ public abstract class Piece {
       }
       i++;
     }
+    return nextMoves;
+  }
 
+  /**
+   * check where the piece can move along the up left diagonal
+   * used for Bishop and Queen
+   * @param board
+   * @return
+   */
+  protected HashSet<Square> canMoveUpLeftDiagonalTo(Board board){
+    HashSet<Square> nextMoves = new HashSet<>();
+    int currRow = this.square.getRow();
+    int currCol = this.square.getColumn();
+
+    int i = currRow + 1;
+    int j = currCol - 1;
+    while(i <= board.getHeight() && j >= 1){
+      Square currSquare = new Square(i, j);
+      if(this.blockedAfterTryAddingSquare(currSquare, nextMoves, board)){
+        break;
+      }
+      i++;
+      j--;
+    }
+    return nextMoves;
+  }
+
+  /**
+   * check where the piece can move along the up right diagonal
+   * used for Bishop and Queen
+   * @param board
+   * @return
+   */
+  protected HashSet<Square> canMoveUpRightDiagonalTo(Board board){
+    HashSet<Square> nextMoves = new HashSet<>();
+    int currRow = this.square.getRow();
+    int currCol = this.square.getColumn();
+
+    int i = currRow + 1;
+    int j = currCol + 1;
+    while(i <= board.getHeight() && j <= board.getWidth()){
+      Square currSquare = new Square(i, j);
+      if(this.blockedAfterTryAddingSquare(currSquare, nextMoves, board)){
+        break;
+      }
+      i++;
+      j++;
+    }
+    return nextMoves;
+  }
+
+  /**
+   * check where the piece can move along the down left diagonal
+   * used for Bishop and Queen
+   * @param board
+   * @return
+   */
+  protected HashSet<Square> canMoveDownLeftDiagonalTo(Board board){
+    HashSet<Square> nextMoves = new HashSet<>();
+    int currRow = this.square.getRow();
+    int currCol = this.square.getColumn();
+
+    int i = currRow - 1;
+    int j = currCol - 1;
+    while(i >= 1 && j >= 1){
+      Square currSquare = new Square(i, j);
+      if(this.blockedAfterTryAddingSquare(currSquare, nextMoves, board)){
+        break;
+      }
+      i--;
+      j--;
+    }
+    return nextMoves;
+  }
+
+
+  /**
+   * check where the piece can move along the down right diagonal
+   * used for Bishop and Queen
+   * @param board
+   * @return
+   */
+  protected HashSet<Square> canMoveDownRightDiagonalTo(Board board){
+    HashSet<Square> nextMoves = new HashSet<>();
+    int currRow = this.square.getRow();
+    int currCol = this.square.getColumn();
+
+    int i = currRow - 1;
+    int j = currCol + 1;
+    while(i >= 1 && j <= board.getWidth()){
+      Square currSquare = new Square(i, j);
+      if(this.blockedAfterTryAddingSquare(currSquare, nextMoves, board)){
+        break;
+      }
+      i--;
+      j++;
+    }
     return nextMoves;
   }
 
