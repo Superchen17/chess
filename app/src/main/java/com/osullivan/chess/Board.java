@@ -3,6 +3,19 @@ package com.osullivan.chess;
 public interface Board {
   public int getWidth();
   public int getHeight();
+
+  /**
+   * check if the given square is on board
+   * @param square
+   * @return true if on board
+   */
+  public boolean isSquareOnBoard(Square s);
+
+  /**
+   * get the piece at that square
+   * @param square
+   * @return piece at that square
+   */
   public Piece whatIsAtSquare(Square square);
 
   /**

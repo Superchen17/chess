@@ -7,7 +7,8 @@ public class ChessBoard implements Board {
   private final int height;
   private HashSet<Piece> pieces;
 
-  private boolean squareOnBoard(Square s){
+  @Override
+  public boolean isSquareOnBoard(Square s){
     if(s.getRow() < 1 || s.getRow() > this.height || s.getColumn() < 1 || s.getColumn() > this.width){
         return false;
       }
@@ -32,7 +33,7 @@ public class ChessBoard implements Board {
     this.height = height;
 
     for(Piece p: pieces){
-      if(!this.squareOnBoard(p.getSquare())){
+      if(!this.isSquareOnBoard(p.getSquare())){
         throw new IllegalArgumentException(
           "cannot set piece at \'" + p.getSquare().toString() + "\' for board of size " + 
           Integer.toString(this.height) + " x " +  Integer.toString(this.width)
@@ -65,7 +66,7 @@ public class ChessBoard implements Board {
   @Override
   public boolean tryAddPiece(Piece p) {
     // check if piece is off board
-    if(!this.squareOnBoard(p.getSquare())){
+    if(!this.isSquareOnBoard(p.getSquare())){
       return false;
     }
 
