@@ -1,8 +1,17 @@
 package com.osullivan.chess;
 
+import java.util.HashSet;
+
 public interface Board {
   public int getWidth();
   public int getHeight();
+
+  /**
+   * get all pieces of a player
+   * @param isWhite true if is white
+   * @return set of pieces
+   */
+  public HashSet<Piece> getTeamPieces(boolean isWhite);
 
   /**
    * check if the given square is on board

@@ -37,6 +37,24 @@ public class Square{
     return this.column;
   }
 
+  /**
+   * assuming the square is empty, check if team pieces can move to it
+   * @param isWhite true if white
+   * @param board board
+   * @return true if can be covered by that team
+   */
+  public boolean canBeCoveredAssumingEmptyBy(boolean isWhite, Board board){
+    if(board.whatIsAtSquare(this) != null){
+      throw new IllegalArgumentException("the square under cover check is not empty");
+    }
+    for(Piece teamPiece: board.getTeamPieces(isWhite)){
+      if(teamPiece.canMoveTo(board).contains(this)){
+        return true;
+      }
+    }
+    return false;
+  }
+
   @Override
   public boolean equals(Object o) {
     if(o.getClass().equals(this.getClass())){

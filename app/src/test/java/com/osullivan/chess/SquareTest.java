@@ -1,8 +1,12 @@
 package com.osullivan.chess;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
@@ -88,5 +92,58 @@ public class SquareTest {
     assertEquals(square1.hashCode(), square2.hashCode());
     assertNotEquals(square1.hashCode(), square3.hashCode());
     assertNotEquals(square3.hashCode(), square4.hashCode());
+
+    HashSet<Square> squares = new HashSet<>();
+    squares.add(square1);
+    assertTrue(squares.contains(square1));
+    assertTrue(squares.contains(square2));
+  }
+
+
+   /**
+   *    -----------------
+      8 | | | | | | | | |
+        -----------------
+      7 | | | | | | | | |
+        -----------------
+      6 | | | |n| | | | |
+        -----------------
+      5 | | | | | | | | |
+        -----------------
+      4 | | | |R| | | | |
+        -----------------
+      3 | | | | | | | | |
+        -----------------
+      2 | | | | | | | | |
+        -----------------
+      1 | | | | | | | | |
+        -----------------
+         a b c d e f g h 
+   */
+  @Test
+  public void test_canBeCoveredAssumingEmptyBy() {
+    HashSet<Piece> pieces = new HashSet<>();
+    pieces.add(new Rook("R", true, new Square("d4"), true));
+    pieces.add(new Knight("N", false, new Square("d6")));
+    Board b = new ChessBoard(8, 8, pieces);
+
+    Square s1 = new Square("d2");
+    assertTrue(s1.canBeCoveredAssumingEmptyBy(true, b));
+
+    Square s2 = new Square("e3");
+    assertFalse(s2.canBeCoveredAssumingEmptyBy(true, b));
+
+    Square s3 = new Square("c8");
+    assertTrue(s3.canBeCoveredAssumingEmptyBy(false, b));
+
+    Square s4 = new Square("d4");
+    Square s5 = new Square("d6");
+    assertThrows(IllegalArgumentException.class, 
+      ()->s4.canBeCoveredAssumingEmptyBy(false, b));
+    assertThrows(IllegalArgumentException.class, 
+      ()->s5.canBeCoveredAssumingEmptyBy(false, b));
+
+    Square s7 = new Square("d7");
+    assertFalse(s7.canBeCoveredAssumingEmptyBy(true, b));
   }
 }

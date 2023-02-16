@@ -1,6 +1,8 @@
 package com.osullivan.chess;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 import java.util.function.Function;
@@ -44,6 +46,92 @@ public class PieceTest {
 
     HashSet<Square> actualSquares = getMoveToFn.apply(board);
     assertEquals(expectedSquares, actualSquares);
+  }
+
+  
+  /**
+   * -----------------------------------------------------------------------------------------------
+   * getters
+   * -----------------------------------------------------------------------------------------------
+   */
+  @Test
+  public void teset_getters() {
+    Piece p1 = new Rook("R", true, new Square("d4"), true);
+    assertEquals("R", p1.getName());
+  }
+
+  /**
+   * -----------------------------------------------------------------------------------------------
+   * canBeProtected
+   * -----------------------------------------------------------------------------------------------
+   */
+
+   /**
+   *    -----------------
+      8 | | | | | | | | |
+        -----------------
+      7 | | | | | | | | |
+        -----------------
+      6 | | | |N| | | | |
+        -----------------
+      5 | | | | | | | | |
+        -----------------
+      4 | | | |R| | | | |
+        -----------------
+      3 | | | | | | | | |
+        -----------------
+      2 | | | | | | | | |
+        -----------------
+      1 | | | | | | | | |
+        -----------------
+         a b c d e f g h 
+   */
+  @Test
+  public void test_canBeProtected_oneProtectNext(){
+    HashSet<Piece> pieces = new HashSet<>();
+    Piece p1 = new Rook("R", true, new Square("d4"), true);
+    Piece p2 = new Knight("N", true, new Square("d6"));
+    pieces.add(p1);
+    pieces.add(p2);
+    Board b = new ChessBoard(8, 8, pieces);
+    assertTrue(p2.canBeProtected(b));
+    assertEquals(2, b.getTeamPieces(true).size());
+    assertFalse(p1.canBeProtected(b));
+    assertEquals(2, b.getTeamPieces(true).size());
+  }
+
+  /**
+   *    -----------------
+      8 | | | | | | | | |
+        -----------------
+      7 | | | | | | | | |
+        -----------------
+      6 | | | | | | | | |
+        -----------------
+      5 | | | | | | | | |
+        -----------------
+      4 | | |r|r| | | | |
+        -----------------
+      3 | | | | | | | | |
+        -----------------
+      2 | | | | | | | | |
+        -----------------
+      1 | | | | | | | | |
+        -----------------
+         a b c d e f g h 
+   */
+  @Test
+  public void test_canBeProtected_mutual(){
+    HashSet<Piece> pieces = new HashSet<>();
+    Piece p1 = new Rook("R", false, new Square("c4"), true);
+    Piece p2 = new Rook("R", false, new Square("d4"), false);
+    pieces.add(p1);
+    pieces.add(p2);
+    Board b = new ChessBoard(8, 8, pieces);
+    assertTrue(p2.canBeProtected(b));
+    assertEquals(2, b.getTeamPieces(false).size());
+    assertTrue(p1.canBeProtected(b));
+    assertEquals(2, b.getTeamPieces(false).size());
   }
 
   /**

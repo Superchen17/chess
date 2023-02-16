@@ -54,6 +54,17 @@ public class ChessBoard implements Board {
   }
 
   @Override
+  public HashSet<Piece> getTeamPieces(boolean isWhite){
+    HashSet<Piece> teamPieces = new HashSet<>();
+    for(Piece p: this.pieces){
+      if(p.isWhite == isWhite){
+        teamPieces.add(p);
+      }
+    }
+    return teamPieces;
+  }
+
+  @Override
   public Piece whatIsAtSquare(Square square){
     for(Piece p: this.pieces){
       if(p.getSquare().equals(square)){

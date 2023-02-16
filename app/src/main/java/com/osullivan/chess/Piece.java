@@ -27,6 +27,18 @@ public abstract class Piece {
   }
 
   /**
+   * check if this piece is protected by other team pieces
+   * @param board
+   * @return true if yes
+   */
+  public boolean canBeProtected(Board board){
+    board.tryRemovePiece(this);
+    boolean result = this.square.canBeCoveredAssumingEmptyBy(isWhite, board);
+    board.tryAddPiece(this);
+    return result;
+  }
+
+  /**
    * 
    * @param square square try to be added to valid moves (won't be added if occupied by own piece)
    * @param nextMoves set of valid moves
