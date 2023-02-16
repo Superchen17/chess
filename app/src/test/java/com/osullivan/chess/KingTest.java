@@ -1,6 +1,7 @@
 package com.osullivan.chess;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 
@@ -135,7 +136,7 @@ public class KingTest {
          a b c d e f g h 
    */
   @Test
-  public void test_canMoveTo_withPiecesAround() {
+  public void test_canMoveTo_withPiecesAround1() {
     Piece p = new King("K", true, new Square("d4"));
     HashSet<Piece> existingPieces = new HashSet<>();
     existingPieces.add(new Queen("Q", false, new Square("b3")));
@@ -156,24 +157,107 @@ public class KingTest {
 
   /**
    *    -----------------
-      8 | | | | | | | | |
+     8 | | | | | | | | |
         -----------------
-      7 | | | | | | | | |
+     7 | | | | | | | | |
         -----------------
-      6 | | | | | | | | |
+     6 | | | | | | | | |
         -----------------
-      5 | | | | | | | | |
+     5 | | |b| |N| | | |
         -----------------
-      4 | | | | | | | | |
+     4 | | | |K|r| | | |
         -----------------
-      3 | | | | | | | | |
+     3 | | | | | | | | |
         -----------------
-      2 | |r| | |q| | | |
+     2 | | | | | | | | |
         -----------------
-      1 | | | | |K| | | |
+     1 | | | | | | | | |
         -----------------
-         a b c d e f g h 
+        a b c d e f g h
    */
+  @Test
+  public void test_canMoveTo_withPiecesAround2() {
+    Piece p = new King("K", true, new Square("d4"));
+    HashSet<Piece> existingPieces = new HashSet<>();
+    existingPieces.add(new Bishop("B", false, new Square("c5")));
+    existingPieces.add(new Knight("N", true, new Square("e5")));
+    existingPieces.add(new Rook("R", false, new Square("e4"), true));
+
+    Board b = new ChessBoard(8, 8, existingPieces);
+    b.tryAddPiece(p);
+
+    HashSet<Square> nextMoves = new HashSet<>();
+    nextMoves.add(new Square("c5"));
+    nextMoves.add(new Square("d5"));
+    nextMoves.add(new Square("c3"));
+    nextMoves.add(new Square("d3"));
+    nextMoves.add(new Square("e4"));
+
+    assertEquals(nextMoves, p.canMoveTo(b));
+    assertEquals(b.whatIsAtSquare(new Square("d4")), p);
+  }
+
+  /**
+   *    -----------------
+     8 | | | | | | | | |
+        -----------------
+     7 | | | | | | | | |
+        -----------------
+     6 | | | | | | | | |
+        -----------------
+     5 | | | | | | | | |
+        -----------------
+     4 | | | | | | | | |
+        -----------------
+     3 | | | | | | | | |
+        -----------------
+     2 | |r| | |K| | | |
+        -----------------
+     1 | | | | | | | | |
+        -----------------
+        a b c d e f g h
+   */
+  @Test
+  public void test_canMoveTo_check() {
+    Piece p = new King("K", true, new Square("e2"));
+    HashSet<Piece> existingPieces = new HashSet<>();
+    existingPieces.add(new Rook("R", false, new Square("b2"),true));
+
+    Board b = new ChessBoard(8, 8, existingPieces);
+    b.tryAddPiece(p);
+
+    HashSet<Square> expectedMoves = new HashSet<>();
+    expectedMoves.add(new Square("d3"));
+    expectedMoves.add(new Square("e3"));
+    expectedMoves.add(new Square("f3"));
+    expectedMoves.add(new Square("d1"));
+    expectedMoves.add(new Square("e1"));
+    expectedMoves.add(new Square("f1"));
+
+    assertEquals(expectedMoves, p.canMoveTo(b));
+    assertTrue(b.getTeamPieces(true).contains(p));
+  }
+
+    /**
+     *    -----------------
+        8 | | | | | | | | |
+          -----------------
+        7 | | | | | | | | |
+          -----------------
+        6 | | | | | | | | |
+          -----------------
+        5 | | | | | | | | |
+          -----------------
+        4 | | | | | | | | |
+          -----------------
+        3 | | | | | | | | |
+          -----------------
+        2 | |r| | |q| | | |
+          -----------------
+        1 | | | | |K| | | |
+          -----------------
+           a b c d e f g h
+     */
   @Test
   public void test_canMoveTo_mate() {
     Piece p = new King("K", true, new Square("e1"));
@@ -184,5 +268,44 @@ public class KingTest {
     b.tryAddPiece(p);
 
     assertEquals(new HashSet<>(), p.canMoveTo(b));
+  }
+
+  /**
+    *  -----------------
+     8 | | | | | | | | |
+       -----------------
+     7 | | | | | | | | |
+       -----------------
+     6 | | | | | | | | |
+       -----------------
+     5 | | | | | | | | |
+       -----------------
+     4 | | | | | | | | |
+       -----------------
+     3 | | | | | | | | |
+       -----------------
+     2 | |r|K|b| | | | |
+       -----------------
+     1 | | | | | | | | |
+       -----------------
+        a b c d e f g h
+   */
+  @Test
+  public void test_canMoveTo_notCoveredButCannotTake(){
+    // black Bishop is not covered, but cannot be taken
+    Piece p = new King("K", true, new Square("c2"));
+    HashSet<Piece> existingPieces = new HashSet<>();
+    existingPieces.add(new Rook("R", false, new Square("b2"), true));
+    existingPieces.add(new Bishop("B", false, new Square("d2")));
+    Board b = new ChessBoard(8, 8, existingPieces);
+    b.tryAddPiece(p);
+
+    HashSet<Square> expectedMoves = new HashSet<>();
+    expectedMoves.add(new Square("b2"));
+    expectedMoves.add(new Square("d3"));
+    expectedMoves.add(new Square("d1"));
+
+    assertEquals(expectedMoves, p.canMoveTo(b));
+    assertTrue(b.getTeamPieces(true).contains(p));
   }
 }

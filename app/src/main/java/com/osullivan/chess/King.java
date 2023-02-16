@@ -24,15 +24,19 @@ public class King extends Piece {
         }
         Piece p = board.whatIsAtSquare(square);
         if(p == null){
+          board.tryRemovePiece(this);
           if(!square.canBeCoveredAssumingEmptyBy(!this.isWhite, board)){
             nextMoves.add(square);
           }
+          board.tryAddPiece(this);
         }
         else{
           if(p.isWhite != this.isWhite){
+            board.tryRemovePiece(this);
             if(!p.canBeProtected(board)){
               nextMoves.add(square);
             }
+            board.tryAddPiece(this);
           }
         }
       }
