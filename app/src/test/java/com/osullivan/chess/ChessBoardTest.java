@@ -14,7 +14,7 @@ import org.junit.jupiter.api.Test;
 public class ChessBoardTest {
   @Test
   public void test_defaultConstructor(){
-    Board board = new ChessBoard(5, 4);
+    Board board = new ChessBoard(5, 4, new HashSet<>());
     assertEquals(4, board.getHeight());
     assertEquals(5, board.getWidth());
 

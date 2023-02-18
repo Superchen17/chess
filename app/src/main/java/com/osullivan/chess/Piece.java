@@ -26,6 +26,18 @@ public abstract class Piece {
     return this.square;
   }
 
+  public void setSquare(Square newSquare){
+    this.square = newSquare;
+  }
+
+  public int getMoveCounter(){
+    return this.moveCounter;
+  }
+
+  public void incrementMoveCounter() {
+    this.moveCounter++;
+  }
+
   /**
    * check if this piece is protected by other team pieces
    * @param board
@@ -245,6 +257,7 @@ public abstract class Piece {
   /**
    * get a set of squares that the piece can move to,
    * including the squares that the piece can capture
+   * excluding castling, en passant and promotions
    * @param board
    * @return
    */
@@ -256,24 +269,24 @@ public abstract class Piece {
    * @param board
    * @return true if successful otherwise false
    */
-  public boolean tryMoveTo(Square newSquare, Board board){
+  public String tryMoveTo(Square newSquare, Board board){
      // check if newSquare in valid moves
      HashSet<Square> canMoveToSquares = this.canMoveTo(board);
      if(!canMoveToSquares.contains(newSquare)){
-       return false;
+       return "cannot move from " + this.square.toString() + " to " + newSquare.toString();
      }
  
      // capture at new square
      Piece p = board.whatIsAtSquare(newSquare);
      if(p != null){
        if(!board.tryRemovePiece(p)){
-         return false;
+         return "cannot capture at " + newSquare.toString();
        }
      }
  
      // set piece to new square
      this.square = newSquare;
      this.moveCounter++;
-     return true;
+     return null;
   }
 }

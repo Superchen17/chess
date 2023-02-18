@@ -15,10 +15,42 @@ public class ChessBoard implements Board {
       return true;
   }
 
+  private void setUpPawns(boolean isWhite){
+    for(int i = 1; i <= this.width; i++){
+      Square square = new Square(isWhite ? 2 : this.height -2 + 1, i);
+      this.pieces.add(new Pawn("P", isWhite, square));
+    }    
+  }
+
+  private void setUpFirstRankPieces(boolean isWhite){
+    int row = isWhite ? 1 : this.height;
+
+    // pair of Rooks
+    this.pieces.add(new Rook("R", isWhite, new Square(row, 1), true));
+    this.pieces.add(new Rook("R", isWhite, new Square(row, 8), false));
+    // pair of Knights
+    this.pieces.add(new Knight("N", isWhite, new Square(row, 2)));
+    this.pieces.add(new Knight("N", isWhite, new Square(row, 7)));
+    // pair of Bishops
+    this.pieces.add(new Bishop("B", isWhite, new Square(row, 3)));
+    this.pieces.add(new Bishop("B", isWhite, new Square(row, 6)));
+    // Queen
+    this.pieces.add(new Queen("Q", isWhite, new Square(row, 4)));
+    this.pieces.add(new King("K", isWhite, new Square(row, 5)));
+  }
+
+  private void setUpPieces(){
+    this.setUpPawns(true);
+    this.setUpFirstRankPieces(true);
+    this.setUpPawns(false);
+    this.setUpFirstRankPieces(false);
+  }
+
   public ChessBoard(int width, int height){
     this.width = width;
     this.height = height;
     this.pieces = new HashSet<>();
+    this.setUpPieces();
   }
 
   /**
