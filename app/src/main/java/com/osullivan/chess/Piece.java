@@ -257,7 +257,7 @@ public abstract class Piece {
   /**
    * get a set of squares that the piece can move to,
    * including the squares that the piece can capture
-   * excluding castling, en passant and promotions
+   * excluding castling, en passant, promotions and enemy discovered checks
    * @param board
    * @return
    */

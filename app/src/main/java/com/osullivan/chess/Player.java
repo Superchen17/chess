@@ -3,15 +3,15 @@ package com.osullivan.chess;
 import java.util.List;
 
 public class Player {
-  private final boolean isWhite;
-  private Board board;
+  protected final boolean isWhite;
+  protected Board board;
 
   public Player(boolean isWhite, Board board) {
     this.isWhite = isWhite;
     this.board = board;
   }
 
-  private String areMoveSquaresValid(Move move){
+  protected String areMoveSquaresValid(Move move){
     if(!this.board.isSquareOnBoard(move.getSquareFrom()) || !this.board.isSquareOnBoard(move.getSquareTo())){
       return "selected squares off board";
     }
@@ -26,12 +26,49 @@ public class Player {
     return null;
   }
 
+  private void movePieceTo(Piece p, Square newSquare){
+    Piece enemyPiece = this.board.whatIsAtSquare(newSquare);
+    if(enemyPiece != null){
+      if(!this.board.tryRemovePiece(enemyPiece)){
+        throw new IllegalAccessError("failed to remove piece from board");
+      }
+    }
+    p.setSquare(newSquare);
+    p.incrementMoveCounter();
+  }
+
+  private void revertPiecesAfterDetectingChecks(Move move, Piece selfPiece, Piece enemyPiece){
+    selfPiece.setSquare(move.getSquareFrom());
+    if(enemyPiece != null){
+      if(!this.board.tryAddPiece(enemyPiece)){
+        throw new IllegalAccessError("failed to add piece to board");
+      }
+    }
+  }
+
+  private String moveWillLeadToSelfChecks(Move move){
+    Piece selfPiece = this.board.whatIsAtSquare(move.getSquareFrom());
+    Piece enemyPiece = this.board.whatIsAtSquare(move.getSquareTo());
+    if(enemyPiece != null){
+      if(!this.board.tryRemovePiece(enemyPiece)){
+        throw new IllegalAccessError("failed to remove piece from board");
+      }
+    }
+    selfPiece.setSquare(move.getSquareTo());
+    if(this.isUnderCheck()){
+      this.revertPiecesAfterDetectingChecks(move, selfPiece, enemyPiece);
+      return "move will leave King in check";
+    }
+    this.revertPiecesAfterDetectingChecks(move, selfPiece, enemyPiece);
+    return null;
+  }
+
   /**
    * make normal moves
    * excluding castling, en passant and promotion
    * @param move
    * @return
-   */
+   */   
   public String tryMakeNormalMove(Move move){
     String errMsg = this.areMoveSquaresValid(move);
     if(errMsg != null){
@@ -39,11 +76,16 @@ public class Player {
     }
 
     Piece p = this.board.whatIsAtSquare(move.getSquareFrom());
-    errMsg = p.tryMoveTo(move.getSquareTo(), this.board);
+    if(!p.canMoveTo(board).contains(move.getSquareTo())){
+      return "cannot move to or capture at new square";
+    }
+
+    errMsg = this.moveWillLeadToSelfChecks(move);
     if(errMsg != null){
       return errMsg;
     }
 
+    this.movePieceTo(p, move.getSquareTo());
     return null;
   }
 
@@ -244,10 +286,37 @@ public class Player {
       return errMsg;
     }
 
+    errMsg = this.moveWillLeadToSelfChecks(move);
+    if(errMsg != null){
+      return errMsg;
+    }
+
     // do en passant capture
     p.setSquare(move.getSquareTo());
     this.board.tryRemovePiece(pieceToBeCaptured);
+    p.incrementMoveCounter();
 
     return null;
+  }
+
+  private Piece getKing(){
+    for(Piece p: this.board.getTeamPieces(this.isWhite)){
+      if(p instanceof King){
+        return p;
+      }
+    }
+    throw new IllegalAccessError("no King found");
+  }
+
+  /**
+   * check if is under check
+   * @return true if under check
+   */
+  public boolean isUnderCheck(){
+    Piece king = this.getKing();
+    if(this.enemyCanAttack(king.getSquare())){
+      return true;
+    }
+    return false;
   }
 }

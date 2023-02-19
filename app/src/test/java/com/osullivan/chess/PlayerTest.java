@@ -333,8 +333,8 @@ public class PlayerTest {
 
   @Test
   public void test_tryMakeNormalMove_moveToInvalidPlace(){
-    this.helper_tryMakeNormalMove_error(true, new Move("d2d5"), "cannot move from d2 to d5", this.getDefaultBoardView());
-    this.helper_tryMakeNormalMove_error(true, new Move("a1a3"), "cannot move from a1 to a3", this.getDefaultBoardView());
+    this.helper_tryMakeNormalMove_error(true, new Move("d2d5"), "cannot move to or capture at new square", this.getDefaultBoardView());
+    this.helper_tryMakeNormalMove_error(true, new Move("a1a3"), "cannot move to or capture at new square", this.getDefaultBoardView());
   }
 
   /**
