@@ -1,6 +1,7 @@
 package com.osullivan.chess;
 
 import java.util.HashSet;
+import java.util.List;
 
 public interface Board {
   public int getWidth();
@@ -40,4 +41,8 @@ public interface Board {
    * @return true if successful
    */
   public boolean tryRemovePiece(Piece p);
+
+  public void appendMoveLog(Move move);
+
+  public List<Move> getMoveLog();
 } 

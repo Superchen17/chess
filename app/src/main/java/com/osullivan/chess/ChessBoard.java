@@ -1,11 +1,14 @@
 package com.osullivan.chess;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 
 public class ChessBoard implements Board {
   private final int width;
   private final int height;
   private HashSet<Piece> pieces;
+  private List<Move> moveLog;
 
   @Override
   public boolean isSquareOnBoard(Square s){
@@ -51,6 +54,7 @@ public class ChessBoard implements Board {
     this.height = height;
     this.pieces = new HashSet<>();
     this.setUpPieces();
+    this.moveLog = new ArrayList<>();
   }
 
   /**
@@ -73,6 +77,7 @@ public class ChessBoard implements Board {
       }
     }
     this.pieces = pieces;
+    this.moveLog = new ArrayList<>();
   }
 
   @Override
@@ -132,4 +137,13 @@ public class ChessBoard implements Board {
     return false;
   }
 
+  @Override
+  public void appendMoveLog(Move move) {
+    this.moveLog.add(move);
+  }
+
+  @Override
+  public List<Move> getMoveLog() {
+    return this.moveLog;
+  }
 }

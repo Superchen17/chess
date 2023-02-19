@@ -695,4 +695,421 @@ public class PlayerTest {
     Piece blackP = new Bishop("B", false, new Square("a3"));
     this.helper_tryCastle_throughCheck(whiteP, blackP, expectedBoardView);
   }
+
+  /**
+   * -----------------------------------------------------------------------------------------------
+   * tryEnPassant
+   * -----------------------------------------------------------------------------------------------
+   */
+  @Test
+  public void test_tryEnPassant_valid_white(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    Player p1 = new Player(true, b);
+    Player p2 = new Player(false, b);
+    
+    b.tryAddPiece(new Pawn("P", true, new Square("e5")));
+    b.tryAddPiece(new Pawn("P", false, new Square("d7")));
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+
+    String errMsg;
+    String expectedBoardView;
+
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | |p| | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | |P| | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    errMsg = p2.tryMakeNormalMove(new Move("d7d5"));
+    b.appendMoveLog(new Move("d7d5"));
+    assertNull(errMsg);
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | |p|P| | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    errMsg = p1.tryEnPassant(new Move("e5d6"));
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | |P| | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+  }
+
+  @Test
+  public void test_tryEnPassant_valid_black(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    Player p1 = new Player(true, b);
+    Player p2 = new Player(false, b);
+    
+    b.tryAddPiece(new Pawn("P", true, new Square("e2")));
+    b.tryAddPiece(new Pawn("P", false, new Square("d4")));
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+
+    String errMsg;
+    String expectedBoardView;
+
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | |p| | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | |P| | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    errMsg = p1.tryMakeNormalMove(new Move("e2e4"));
+    b.appendMoveLog(new Move("e2e4"));
+    assertNull(errMsg);
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | |p|P| | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    errMsg = p2.tryEnPassant(new Move("d4e3"));
+    b.appendMoveLog(new Move("d4e3"));
+    assertNull(errMsg);
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | |p| | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+  }
+
+  @Test
+  public void test_tryEnPassant_usingWrongPiece(){
+    Board b = new ChessBoard(8, 8);
+    BoardTextView view = new BoardTextView(b);
+    Player p1 = new Player(true, b);
+    String errMsg = p1.tryEnPassant(new Move("a1b2"));
+    assertEquals("cannot en passant with pieces other than Pawn", errMsg);
+    assertEquals(this.getDefaultBoardView(), view.displayBoard());
+  }
+
+  @Test
+  public void test_tryEnPassant_pawnOnWrongRank(){
+    Board b = new ChessBoard(8, 8);
+    BoardTextView view = new BoardTextView(b);
+    Player p1 = new Player(true, b);
+    Player p2 = new Player(false, b);
+    String expectedErrMsg = "cannot en passant from invalid rank";
+    assertEquals(expectedErrMsg, p1.tryEnPassant(new Move("b2c3")));
+    assertEquals(this.getDefaultBoardView(), view.displayBoard());
+    assertEquals(expectedErrMsg, p2.tryEnPassant(new Move("b7c6")));
+    assertEquals(this.getDefaultBoardView(), view.displayBoard());
+  }
+
+  @Test
+  public void test_tryEnPassant_movingWrongDirection(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    Player p1 = new Player(true, b);
+    Player p2 = new Player(false, b);
+    
+    b.tryAddPiece(new Pawn("P", true, new Square("e5")));
+    b.tryAddPiece(new Pawn("P", false, new Square("d7")));
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+
+    String errMsg;
+    String expectedBoardView;
+
+    errMsg = p2.tryMakeNormalMove(new Move("d7d5"));
+    b.appendMoveLog(new Move("d7d5"));
+    assertNull(errMsg);
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | |p|P| | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    String expectedErrMsg = "invalid en passant destination";
+    assertEquals(expectedErrMsg, p1.tryEnPassant(new Move("e5e6")));
+    assertEquals(expectedErrMsg, p1.tryEnPassant(new Move("e5e4")));
+    assertEquals(expectedErrMsg, p1.tryEnPassant(new Move("e5d4")));
+  }
+
+  @Test
+  public void test_tryEnPassant_tryCaptureRook(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    Player p1 = new Player(true, b);
+    Player p2 = new Player(false, b);
+
+    b.tryAddPiece(new Rook("R", true, new Square("e4"), false));
+    b.tryAddPiece(new Pawn("P", true, new Square("g5")));
+    b.tryAddPiece(new Pawn("P", false, new Square("d4")));
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+
+    String expectedBoardView;
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | |P| |\n" +
+    "  -----------------\n" +
+    "4 | | | |p|R| | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    String expectedErrMsg = "no enemy Pawn to en passant capture";
+    assertEquals(expectedErrMsg, p2.tryEnPassant(new Move("d4e3")));
+    assertEquals(expectedErrMsg, p1.tryEnPassant(new Move("g5f6")));
+    assertEquals(expectedErrMsg, p2.tryEnPassant(new Move("d4e3")));
+  }
+
+  @Test
+  public void test_tryEnPassant_enemyPawnMovedOneForward(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    Player p1 = new Player(true, b);
+    Player p2 = new Player(false, b);
+    
+    b.tryAddPiece(new Pawn("P", true, new Square("e5")));
+    b.tryAddPiece(new Pawn("P", false, new Square("d6")));
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+
+    String errMsg;
+    String expectedBoardView;
+
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | |p| | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | |P| | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    errMsg = p2.tryMakeNormalMove(new Move("d6d5"));
+    assertNull(errMsg);
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | |p|P| | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    String expectedErrMsg = "enemy pawn invalid en passant status";
+    assertEquals(expectedErrMsg, p1.tryEnPassant(new Move("e5d6")));
+    b.appendMoveLog(new Move("d6d5"));
+    assertEquals(expectedErrMsg, p1.tryEnPassant(new Move("e5d6")));
+  }
+
+  @Test
+  public void test_tryEnPassant_enemyDidntMovePawnLast(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    Player p1 = new Player(true, b);
+    Player p2 = new Player(false, b);
+    
+    b.tryAddPiece(new Pawn("P", true, new Square("e5")));
+    b.tryAddPiece(new Pawn("P", false, new Square("d7")));
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+
+    String errMsg;
+    String expectedBoardView;
+
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | |p| | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | |P| | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    errMsg = p2.tryMakeNormalMove(new Move("d7d5"));
+    b.appendMoveLog(new Move("d7d5"));
+    assertNull(errMsg);
+    errMsg = p1.tryMakeNormalMove(new Move("e1f1"));
+    b.appendMoveLog(new Move("e1f1"));
+    assertNull(errMsg);
+    errMsg = p2.tryMakeNormalMove(new Move("e8f8"));
+    b.appendMoveLog(new Move("e8f8"));
+    assertNull(errMsg);
+
+    expectedBoardView = 
+    "  -----------------\n" + 
+    "8 | | | | | |k| | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | |p|P| | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | | |K| | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedBoardView, view.displayBoard());
+
+    assertEquals("enemy pawn invalid en passant status", p1.tryEnPassant(new Move("e5d6")));
+  }
 }

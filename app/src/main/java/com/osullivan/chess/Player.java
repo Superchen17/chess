@@ -1,5 +1,7 @@
 package com.osullivan.chess;
 
+import java.util.List;
+
 public class Player {
   private final boolean isWhite;
   private Board board;
@@ -9,13 +11,7 @@ public class Player {
     this.board = board;
   }
 
-  /**
-   * make normal moves
-   * excluding castling, en passant and promotion
-   * @param move
-   * @return
-   */
-  public String tryMakeNormalMove(Move move){
+  private String areMoveSquaresValid(Move move){
     if(!this.board.isSquareOnBoard(move.getSquareFrom()) || !this.board.isSquareOnBoard(move.getSquareTo())){
       return "selected squares off board";
     }
@@ -27,8 +23,23 @@ public class Player {
     if(p.isWhitePiece() != this.isWhite){
       return "cannot select enemy piece";
     }
+    return null;
+  }
 
-    String errMsg = p.tryMoveTo(move.getSquareTo(), this.board);
+  /**
+   * make normal moves
+   * excluding castling, en passant and promotion
+   * @param move
+   * @return
+   */
+  public String tryMakeNormalMove(Move move){
+    String errMsg = this.areMoveSquaresValid(move);
+    if(errMsg != null){
+      return errMsg;
+    }
+
+    Piece p = this.board.whatIsAtSquare(move.getSquareFrom());
+    errMsg = p.tryMoveTo(move.getSquareTo(), this.board);
     if(errMsg != null){
       return errMsg;
     }
@@ -144,5 +155,99 @@ public class Player {
     Square rookTo = new Square(this.isWhite ? "f1" : "f8");
     Square kingTo = new Square(this.isWhite ? "g1" : "g8");
     return this.tryCastle(kingFrom, kingTo, rookFrom, rookTo);
+  }
+
+  private String isEnPassantDirectionValid(Move move){
+    String errMsg = "invalid en passant destination";
+    int forwardDir = this.isWhite ? 1 : -1;
+    Square squareFrom = move.getSquareFrom();
+    Square squareTo = move.getSquareTo();
+    if(squareTo.getRow() - squareFrom.getRow() != forwardDir){
+      return errMsg;
+    }
+    if(Math.abs(squareTo.getColumn() - squareFrom.getColumn()) != 1){
+      return errMsg;
+    }
+    return null;
+  }
+
+  private String isEnemyPawnAtEnPassantCapture(Piece pieceToBeCaptured){
+    String errMsg = "no enemy Pawn to en passant capture";
+    if(pieceToBeCaptured == null){
+      return errMsg;
+    }
+    if(!(pieceToBeCaptured instanceof Pawn)){
+      return errMsg;
+    }
+    return null;
+  }
+
+  private String didEnemyPawnJustMoveTwoForward(Square squareToBeCaptured){
+    String errMsg = "enemy pawn invalid en passant status";
+    List<Move> moveLog = this.board.getMoveLog();
+    if(moveLog.size() == 0){
+      return errMsg;
+    }
+    Move enemyLastMove = moveLog.get(moveLog.size() - 1);
+    Square enemyLastMoveFrom = enemyLastMove.getSquareFrom();
+    Square enemyLastMoveTo = enemyLastMove.getSquareTo();
+    if(!enemyLastMoveTo.equals(squareToBeCaptured)){
+      return errMsg;
+    }
+    if(Math.abs(enemyLastMoveFrom.getRow() - enemyLastMoveTo.getRow()) != 2){
+      return errMsg;
+    }
+    return null;
+  }
+
+  /**
+   * try en passant capture
+   * @param move
+   * @return
+   */
+  public String tryEnPassant(Move move){
+    String errMsg = this.areMoveSquaresValid(move);
+    if(errMsg != null){
+      return errMsg;
+    }
+
+    // cannot en passant if selected piece is not a pawn
+    Piece p = this.board.whatIsAtSquare(move.getSquareFrom());
+    if(!(p instanceof Pawn)){
+      return "cannot en passant with pieces other than Pawn";
+    }
+
+    // cannot en passant if piece on wrong ranks
+    // white: rank 5, black: rank 4
+    int enPassantRowFrom = this.isWhite ? 5 : 4;
+    if(p.getSquare().getRow() != enPassantRowFrom){
+      return "cannot en passant from invalid rank";
+    }
+
+    // cannot en passant if Pawn not moving in forward diagonals
+    errMsg = this.isEnPassantDirectionValid(move);
+    if(errMsg != null){
+      return errMsg;
+    }
+
+    // cannot en passant if there is no enemy Pawn at capturing square
+    Square squareToBeCaptured = new Square(p.getSquare().getRow(), move.getSquareTo().getColumn());
+    Piece pieceToBeCaptured = this.board.whatIsAtSquare(squareToBeCaptured);
+    errMsg = this.isEnemyPawnAtEnPassantCapture(pieceToBeCaptured);
+    if(errMsg != null){
+      return errMsg;
+    }
+
+    // can only en passant if the enemy Pawn just moved forward 2 squares
+    errMsg = this.didEnemyPawnJustMoveTwoForward(squareToBeCaptured);
+    if(errMsg != null){
+      return errMsg;
+    }
+
+    // do en passant capture
+    p.setSquare(move.getSquareTo());
+    this.board.tryRemovePiece(pieceToBeCaptured);
+
+    return null;
   }
 }
