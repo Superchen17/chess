@@ -1,8 +1,9 @@
 package com.osullivan.chess;
 
+import java.io.IOException;
 import java.util.List;
 
-public class Player {
+public abstract class Player {
   protected final boolean isWhite;
   protected Board board;
 
@@ -68,8 +69,9 @@ public class Player {
    * excluding castling, en passant and promotion
    * @param move
    * @return
+   * @throws IOException
    */   
-  public String tryMakeNormalMove(Move move){
+  public String tryMakeNormalMove(Move move) throws IOException{
     String errMsg = this.areMoveSquaresValid(move);
     if(errMsg != null){
       return errMsg;
@@ -86,6 +88,16 @@ public class Player {
     }
 
     this.movePieceTo(p, move.getSquareTo());
+    if(this.canPromote(p)){
+      Piece promotedPiece = this.getPromotedPiece();
+      promotedPiece.setSquare(p.getSquare());
+      if(!this.board.tryRemovePiece(p)){
+        throw new IllegalAccessError("failed to remove piece from board");
+      }
+      if(!this.board.tryAddPiece(promotedPiece)){
+        throw new IllegalAccessError("failed to add piece to board");
+      }
+    }
     return null;
   }
 
@@ -319,4 +331,23 @@ public class Player {
     }
     return false;
   }
+
+  protected boolean canPromote(Piece p){
+    // check if the piece is piece is Pawn
+    if(!(p instanceof Pawn)){
+      return false;
+    } 
+
+    // can only promote when moving to bottom ranks
+    int bottomRank = this.isWhite ? this.board.getHeight() : 1;
+    if(p.getSquare().getRow() != bottomRank){
+      return false;
+    }
+
+    return true;
+  }
+
+  public abstract void makeOneMove() throws IOException;
+
+  protected abstract Piece getPromotedPiece() throws IOException;
 }

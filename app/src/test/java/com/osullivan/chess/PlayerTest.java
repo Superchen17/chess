@@ -3,6 +3,7 @@ package com.osullivan.chess;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
+import java.io.IOException;
 import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
@@ -35,10 +36,10 @@ public class PlayerTest {
     "   a b c d e f g h \n";
   }
 
-  private void helper_tryMakeNormalMove_error(boolean isWhite, Move move, String expectedErrMsg, String expectedBoardView) {
+  private void helper_tryMakeNormalMove_error(boolean isWhite, Move move, String expectedErrMsg, String expectedBoardView) throws IOException {
     Board b = new ChessBoard(8, 8);
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(isWhite, b);
+    Player p1 = new TextPlayer(isWhite, b);
     assertEquals(expectedErrMsg, p1.tryMakeNormalMove(move));
     assertEquals(expectedBoardView, view.displayBoard());
   }
@@ -47,14 +48,15 @@ public class PlayerTest {
    * -----------------------------------------------------------------------------------------------
    * tryMakeNormalMove
    * -----------------------------------------------------------------------------------------------
+   * @throws IOException
    */
   @Test
-  public void test_tryMakeNormalMove_italianGame() {
+  public void test_tryMakeNormalMove_italianGame() throws IOException {
     // Italian game opening
     Board b = new ChessBoard(8, 8);
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     String errMsg; 
     String expectedBoardView;
@@ -139,12 +141,12 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryMakeNormalMove_queensGambitAccepted() {
+  public void test_tryMakeNormalMove_queensGambitAccepted() throws IOException {
     // queen's gambit accepted
     Board b = new ChessBoard(8, 8);
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     String errMsg; 
     String expectedBoardView;
@@ -307,7 +309,7 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryMakeNormalMove_selectOffBoard() {
+  public void test_tryMakeNormalMove_selectOffBoard() throws IOException {
     String expectedErrMsg = "selected squares off board";
 
     this.helper_tryMakeNormalMove_error(
@@ -318,21 +320,21 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryMakeNormalMove_noPieceSelected() {
+  public void test_tryMakeNormalMove_noPieceSelected() throws IOException {
     String expectedErrMsg = "no piece selected";
     this.helper_tryMakeNormalMove_error(true, new Move("a3a4"), expectedErrMsg, this.getDefaultBoardView());
     this.helper_tryMakeNormalMove_error(true, new Move("h6h8"), expectedErrMsg, this.getDefaultBoardView());
   }
 
   @Test
-  public void test_tryMakeNormalMove_selectedEnemyPiece() {
+  public void test_tryMakeNormalMove_selectedEnemyPiece() throws IOException {
     String expectedErrMsg = "cannot select enemy piece";
     this.helper_tryMakeNormalMove_error(true, new Move("c7c5"), expectedErrMsg, this.getDefaultBoardView());
     this.helper_tryMakeNormalMove_error(false, new Move("a1a2"), expectedErrMsg, this.getDefaultBoardView());
   }
 
   @Test
-  public void test_tryMakeNormalMove_moveToInvalidPlace(){
+  public void test_tryMakeNormalMove_moveToInvalidPlace() throws IOException{
     this.helper_tryMakeNormalMove_error(true, new Move("d2d5"), "cannot move to or capture at new square", this.getDefaultBoardView());
     this.helper_tryMakeNormalMove_error(true, new Move("a1a3"), "cannot move to or capture at new square", this.getDefaultBoardView());
   }
@@ -345,8 +347,8 @@ public class PlayerTest {
   @Test void test_tryCastle_valid1(){
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     b.tryAddPiece(new Rook("R", true, new Square("a1"), false));
     b.tryAddPiece(new Rook("R", false, new Square("h8"), true));
@@ -386,8 +388,8 @@ public class PlayerTest {
   @Test void test_tryCastle_valid2(){
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     b.tryAddPiece(new Rook("R", true, new Square("h1"), true));
     b.tryAddPiece(new Rook("R", false, new Square("a8"), false));
@@ -426,8 +428,8 @@ public class PlayerTest {
 
   @Test void test_tryCastle_piecesNotInPlace(){
     Board b = new ChessBoard(8, 8, new HashSet<>());
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     b.tryAddPiece(new Rook("R", true, new Square("a2"), false));
     b.tryAddPiece(new Rook("R", false, new Square("g8"), true));
@@ -442,8 +444,8 @@ public class PlayerTest {
   @Test
   public void test_tryCastle_wrongPieces(){
     Board b = new ChessBoard(8, 8, new HashSet<>());
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     b.tryAddPiece(new Knight("N", true, new Square("a1")));
     b.tryAddPiece(new Rook("R", false, new Square("h8"), true));
@@ -458,8 +460,8 @@ public class PlayerTest {
   @Test
   public void test_tryCastle_wrongColor(){
     Board b = new ChessBoard(8, 8, new HashSet<>());
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     b.tryAddPiece(new Rook("R", false, new Square("a1"), false));
     b.tryAddPiece(new Rook("R", false, new Square("h8"), true));
@@ -472,14 +474,14 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryCastle_rookMoved(){
+  public void test_tryCastle_rookMoved() throws IOException{
     Board b = new ChessBoard(8, 8, new HashSet<>());
     b.tryAddPiece(new Rook("R", true, new Square("a1"), false));
     b.tryAddPiece(new Rook("R", false, new Square("h8"), true));
     b.tryAddPiece(new King("K", true, new Square("e1")));
     b.tryAddPiece(new King("K", false, new Square("e8")));
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     String errMsg;
 
@@ -501,14 +503,14 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryCastle_kingMoved(){
+  public void test_tryCastle_kingMoved() throws IOException{
     Board b = new ChessBoard(8, 8, new HashSet<>());
     b.tryAddPiece(new Rook("R", true, new Square("a1"), false));
     b.tryAddPiece(new Rook("R", false, new Square("h8"), true));
     b.tryAddPiece(new King("K", true, new Square("e1")));
     b.tryAddPiece(new King("K", false, new Square("e8")));
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     String errMsg;
 
@@ -533,8 +535,8 @@ public class PlayerTest {
   public void test_tryCastle_blocked(){
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     b.tryAddPiece(new Rook("R", true, new Square("a1"), false));
     b.tryAddPiece(new Rook("R", false, new Square("h8"), true));
@@ -572,8 +574,8 @@ public class PlayerTest {
   private void helper_tryCastle_throughCheck(Piece whiteCheckingPiece, Piece blackCheckingPiece, String expectedBoardView){
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
     
     b.tryAddPiece(new Rook("R", true, new Square("a1"), false));
     b.tryAddPiece(new Rook("R", false, new Square("h8"), true));
@@ -700,13 +702,14 @@ public class PlayerTest {
    * -----------------------------------------------------------------------------------------------
    * tryEnPassant
    * -----------------------------------------------------------------------------------------------
+   * @throws IOException
    */
   @Test
-  public void test_tryEnPassant_valid_white(){
+  public void test_tryEnPassant_valid_white() throws IOException{
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
     
     b.tryAddPiece(new Pawn("P", true, new Square("e5")));
     b.tryAddPiece(new Pawn("P", false, new Square("d7")));
@@ -785,11 +788,11 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryEnPassant_valid_black(){
+  public void test_tryEnPassant_valid_black() throws IOException{
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
     
     b.tryAddPiece(new Pawn("P", true, new Square("e2")));
     b.tryAddPiece(new Pawn("P", false, new Square("d4")));
@@ -873,7 +876,7 @@ public class PlayerTest {
   public void test_tryEnPassant_usingWrongPiece(){
     Board b = new ChessBoard(8, 8);
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
+    Player p1 = new TextPlayer(true, b);
     String errMsg = p1.tryEnPassant(new Move("a1b2"));
     assertEquals("cannot en passant with pieces other than Pawn", errMsg);
     assertEquals(this.getDefaultBoardView(), view.displayBoard());
@@ -883,8 +886,8 @@ public class PlayerTest {
   public void test_tryEnPassant_pawnOnWrongRank(){
     Board b = new ChessBoard(8, 8);
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
     String expectedErrMsg = "cannot en passant from invalid rank";
     assertEquals(expectedErrMsg, p1.tryEnPassant(new Move("b2c3")));
     assertEquals(this.getDefaultBoardView(), view.displayBoard());
@@ -893,11 +896,11 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryEnPassant_movingWrongDirection(){
+  public void test_tryEnPassant_movingWrongDirection() throws IOException{
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
     
     b.tryAddPiece(new Pawn("P", true, new Square("e5")));
     b.tryAddPiece(new Pawn("P", false, new Square("d7")));
@@ -941,8 +944,8 @@ public class PlayerTest {
   public void test_tryEnPassant_tryCaptureRook(){
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
 
     b.tryAddPiece(new Rook("R", true, new Square("e4"), false));
     b.tryAddPiece(new Pawn("P", true, new Square("g5")));
@@ -979,11 +982,11 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryEnPassant_enemyPawnMovedOneForward(){
+  public void test_tryEnPassant_enemyPawnMovedOneForward() throws IOException{
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
     
     b.tryAddPiece(new Pawn("P", true, new Square("e5")));
     b.tryAddPiece(new Pawn("P", false, new Square("d6")));
@@ -1044,11 +1047,11 @@ public class PlayerTest {
   }
 
   @Test
-  public void test_tryEnPassant_enemyDidntMovePawnLast(){
+  public void test_tryEnPassant_enemyDidntMovePawnLast() throws IOException{
     Board b = new ChessBoard(8, 8, new HashSet<>());
     BoardTextView view = new BoardTextView(b);
-    Player p1 = new Player(true, b);
-    Player p2 = new Player(false, b);
+    Player p1 = new TextPlayer(true, b);
+    Player p2 = new TextPlayer(false, b);
     
     b.tryAddPiece(new Pawn("P", true, new Square("e5")));
     b.tryAddPiece(new Pawn("P", false, new Square("d7")));

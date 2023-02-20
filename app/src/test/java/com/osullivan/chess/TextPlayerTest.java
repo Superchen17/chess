@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintStream;
 import java.io.StringReader;
+import java.util.HashSet;
 
 import org.junit.jupiter.api.Test;
 
@@ -168,6 +169,159 @@ public class TextPlayerTest {
     String expectedOutStr = this.getDefaultBoardView() + makeMovePrompt + readMovePrompt + 
       errMsg + readMovePrompt + expectedBoardViewAfter;
     assertEquals(expectedOutStr, bytes.toString());
+    bytes.reset();
+  }
+
+  @Test
+  public void test_getPromotedPiece_valid() throws IOException {
+    Board b = new ChessBoard(8, 8);
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    TextPlayer p1 = this.createTextPlayer(true, b, "n\n", bytes);
+
+    Piece p = p1.getPromotedPiece();
+    String prompt = "Choose your promotion piece (R, N, B, Q):\n";
+    assertEquals(prompt, bytes.toString());
+    assertEquals(Knight.class.getName(), p.getClass().getName());
+    bytes.reset();
+  }
+
+  @Test
+  public void test_getPromotedPiece_invalid() throws IOException {
+    Board b = new ChessBoard(8, 8);
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    TextPlayer p1 = this.createTextPlayer(true, b, "c\nqn\nq\n", bytes);
+
+    String prompt = "Choose your promotion piece (R, N, B, Q):\n";
+    String errMsg = "invalid promotion choice\n";
+    Piece p = p1.getPromotedPiece();
+    assertEquals(prompt + errMsg + prompt + errMsg + prompt, bytes.toString());
+    assertEquals(Queen.class.getName(), p.getClass().getName());
+    bytes.reset();
+  }
+
+  @Test
+  public void test_getPromotedPiece_null() throws IOException {
+    Board b = new ChessBoard(8, 8);
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    TextPlayer p1 = this.createTextPlayer(true, b, "\n", bytes);
+
+    assertThrows(IOException.class, ()->p1.getPromotedPiece());
+    bytes.reset();
+  }
+
+  @Test 
+  public void test_normalMoveWithPromotion_white() throws IOException {
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+    b.tryAddPiece(new Pawn("P", true, new Square("b7")));
+
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    TextPlayer p1 = this.createTextPlayer(true, b, "b7b8\nr\n", bytes);
+
+    String expectedView;
+    expectedView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | |P| | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
+
+    p1.makeOneMove();
+
+    expectedView = 
+    "  -----------------\n" + 
+    "8 | |R| | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
+    bytes.reset();
+  }
+
+  @Test
+  public void test_normalMoveWithPromotion_black() throws IOException {
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+    b.tryAddPiece(new Pawn("P", false, new Square("g2")));
+
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    TextPlayer p2 = this.createTextPlayer(false, b, "g2g1\nb\n", bytes);
+
+    String expectedView;
+    expectedView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | |p| |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
+
+    p2.makeOneMove();
+
+    expectedView = 
+    "  -----------------\n" + 
+    "8 | | | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| |b| |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
     bytes.reset();
   }
 }
