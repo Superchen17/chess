@@ -12,6 +12,10 @@ public abstract class Player {
     this.board = board;
   }
 
+  public boolean isWhitePlayer(){
+    return this.isWhite;
+  }
+
   protected String areMoveSquaresValid(Move move){
     if(!this.board.isSquareOnBoard(move.getSquareFrom()) || !this.board.isSquareOnBoard(move.getSquareTo())){
       return "selected squares off board";
@@ -254,12 +258,7 @@ public abstract class Player {
     return null;
   }
 
-  /**
-   * try en passant capture
-   * @param move
-   * @return
-   */
-  public String tryEnPassant(Move move){
+  protected String canEnPassant(Move move) {
     String errMsg = this.areMoveSquaresValid(move);
     if(errMsg != null){
       return errMsg;
@@ -298,12 +297,30 @@ public abstract class Player {
       return errMsg;
     }
 
+    // cannot en passant if move lead to checks
     errMsg = this.moveWillLeadToSelfChecks(move);
+    if(errMsg != null){
+      return errMsg;
+    }
+    return null;
+  }
+
+  /**
+   * try en passant capture
+   * @param move
+   * @return
+   */
+  public String tryEnPassant(Move move){
+    String errMsg = this.canEnPassant(move);
     if(errMsg != null){
       return errMsg;
     }
 
     // do en passant capture
+    Piece p = this.board.whatIsAtSquare(move.getSquareFrom());
+    Square squareToBeCaptured = new Square(p.getSquare().getRow(), move.getSquareTo().getColumn());
+    Piece pieceToBeCaptured = this.board.whatIsAtSquare(squareToBeCaptured);
+
     p.setSquare(move.getSquareTo());
     this.board.tryRemovePiece(pieceToBeCaptured);
     p.incrementMoveCounter();
@@ -341,6 +358,84 @@ public abstract class Player {
     // can only promote when moving to bottom ranks
     int bottomRank = this.isWhite ? this.board.getHeight() : 1;
     if(p.getSquare().getRow() != bottomRank){
+      return false;
+    }
+
+    return true;
+  }
+
+  protected boolean stillHasLegalMoves(){
+    for(Piece p: this.board.getTeamPieces(this.isWhite)){
+      // check normal moves
+      for(Square s: p.canMoveTo(this.board)){
+        String errMsg = this.moveWillLeadToSelfChecks(new Move(p.getSquare(), s));
+        if(errMsg == null){
+          return true;
+        }
+      }
+      // check en passant
+      if(p instanceof Pawn){
+        int forwardDir = this.isWhite ? 1 : -1;
+        Move enPassantMove1 = new Move(
+          p.getSquare(), 
+          new Square(p.getSquare().getRow() + forwardDir, p.getSquare().getColumn() + 1)
+        );
+        Move enPassantMove2 = new Move(
+          p.getSquare(), 
+          new Square(p.getSquare().getRow() + forwardDir, p.getSquare().getColumn() - 1)
+        );
+        if(this.canEnPassant(enPassantMove1) == null || this.canEnPassant(enPassantMove2) == null){
+          return true;
+        }
+      }
+    }
+    return false;
+  }
+
+  /**
+   * determine if it is stalemate
+   * 1. King is NOT under check
+   * 2. no legal moves
+   * @return
+   */
+  protected boolean isStaleMate(){
+    // is stalemate when king is Not under check
+    if(this.isUnderCheck()){
+      return false;
+    }
+    // is stalemate when no pieces can be moved without putting king under check
+    if(this.stillHasLegalMoves()){
+      return false;
+    }
+    return true;
+  }
+
+  /**
+   * determine if it is checkmate
+   * 1. King is under check
+   * 2. King has no squares to move to
+   * 3. enemy attacking piece cannot be captured
+   * 4. enemy attacking path cannot be blocked
+   * @return true if checkmate
+   */
+  protected boolean isCheckMate(){
+    if(!this.isUnderCheck()){
+      return false;
+    }
+
+    Piece king = this.getKing();
+    if(king.canMoveTo(this.board).size() > 0){
+      return false;
+    }
+
+    // for(Piece p: this.board.getTeamPieces(!this.isWhite)){
+    //   if(p.canMoveTo(board).contains(new Square("f4"))){
+    //     System.out.println(p);
+    //     System.out.println(p.getSquare());
+    //   }
+    // }
+
+    if(this.stillHasLegalMoves()){
       return false;
     }
 

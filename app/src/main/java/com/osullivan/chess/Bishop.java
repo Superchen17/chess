@@ -17,4 +17,9 @@ public class Bishop extends Piece{
     nextMoves.addAll(this.canMoveUpRightDiagonalTo(board));
     return nextMoves;
   }
+
+  @Override
+  public HashSet<Square> canCaptureAt(Board board) {
+    return this.canMoveTo(board);
+  }
 }

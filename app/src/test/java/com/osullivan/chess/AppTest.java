@@ -3,12 +3,64 @@
  */
 package com.osullivan.chess;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.PrintStream;
+
 import org.junit.jupiter.api.Test;
-import static org.junit.jupiter.api.Assertions.*;
+import org.junit.jupiter.api.parallel.ResourceAccessMode;
+import org.junit.jupiter.api.parallel.ResourceLock;
+import org.junit.jupiter.api.parallel.Resources;
 
 class AppTest {
-    @Test void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
+  @ResourceLock(value = Resources.SYSTEM_OUT, mode = ResourceAccessMode.READ_WRITE)
+  private void test_game(String inFileName, String outFileName) throws IOException{
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    PrintStream out = new PrintStream(bytes, true);
+
+    InputStream input = getClass().getClassLoader().getResourceAsStream(inFileName);
+    assertNotNull(input);
+
+    InputStream expectedStream = getClass().getClassLoader().getResourceAsStream(outFileName);
+    assertNotNull(expectedStream);
+
+    InputStream oldIn = System.in;
+    PrintStream oldOut = System.out;
+
+    try{
+      System.setIn(input);
+      System.setOut(out);
+      App.main(new String[0]);
     }
+    finally{
+      System.setIn(oldIn);
+      System.setOut(oldOut);
+    }
+
+    String expected  = new String(expectedStream.readAllBytes());
+    String actual = bytes.toString();
+    assertEquals(expected, actual);
+  }
+
+  @Test
+  public void test_enpassant_mate() throws IOException{
+    //https://chess.stackexchange.com/questions/21492/fastest-possible-checkmate-by-en-passant
+    this.test_game("input_enpassant_mate.txt", "output_enpassant_mate.txt");
+  }
+
+  @Test
+  public void test_promotion_mate() throws IOException{
+    //https://www.chess.com/forum/view/game-analysis/shortest-checkmated-game-with-pawn-promotion
+    this.test_game("input_promotion_mate.txt", "output_promotion_mate.txt");
+  }
+
+  @Test
+  public void test_stalemate() throws IOException{
+    //https://www.chess.com/forum/view/game-showcase/fastest-stalemate-known-in-chess
+    this.test_game("input_stalemate.txt", "output_stalemate.txt");
+  }
 }

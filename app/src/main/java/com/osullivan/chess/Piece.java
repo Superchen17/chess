@@ -263,30 +263,5 @@ public abstract class Piece {
    */
   public abstract HashSet<Square> canMoveTo(Board board);
 
-  /**
-   * move the piece to distination square and capture
-   * @param newSquare
-   * @param board
-   * @return true if successful otherwise false
-   */
-  public String tryMoveTo(Square newSquare, Board board){
-     // check if newSquare in valid moves
-     HashSet<Square> canMoveToSquares = this.canMoveTo(board);
-     if(!canMoveToSquares.contains(newSquare)){
-       return "cannot move from " + this.square.toString() + " to " + newSquare.toString();
-     }
- 
-     // capture at new square
-     Piece p = board.whatIsAtSquare(newSquare);
-     if(p != null){
-       if(!board.tryRemovePiece(p)){
-         return "cannot capture at " + newSquare.toString();
-       }
-     }
- 
-     // set piece to new square
-     this.square = newSquare;
-     this.moveCounter++;
-     return null;
-  }
+  public abstract HashSet<Square> canCaptureAt(Board board);
 }

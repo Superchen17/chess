@@ -38,4 +38,9 @@ public class Rook extends Piece{
   public boolean isKingSideRook(){
     return this.isKingSide;
   }
+
+  @Override
+  public HashSet<Square> canCaptureAt(Board board) {
+    return this.canMoveTo(board);
+  }
 }

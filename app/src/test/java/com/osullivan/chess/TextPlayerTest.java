@@ -1,7 +1,9 @@
 package com.osullivan.chess;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
@@ -323,5 +325,189 @@ public class TextPlayerTest {
     "   a b c d e f g h \n";
     assertEquals(expectedView, view.displayBoard());
     bytes.reset();
+  }
+
+  @Test
+  public void test_isCheckMate_checkmate(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+    b.tryAddPiece(new Rook("R", true, new Square("a8"), true));
+    b.tryAddPiece(new Rook("R", true, new Square("h7"), false));
+
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    TextPlayer p2 = this.createTextPlayer(false, b, "g2g1\nb\n", bytes);
+    
+    String expectedView;
+    expectedView = 
+    "  -----------------\n" + 
+    "8 |R| | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | |R|\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
+    assertTrue(p2.isCheckMate());
+    bytes.reset();
+  }
+
+  @Test
+  public void test_isCheckMate_canBlock(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+    b.tryAddPiece(new Rook("R", true, new Square("a8"), true));
+    b.tryAddPiece(new Rook("R", true, new Square("h7"), false));
+    b.tryAddPiece(new Rook("R", false, new Square("b4"), false));
+
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    TextPlayer p2 = this.createTextPlayer(false, b, "g2g1\nb\n", bytes);
+    
+    String expectedView;
+    expectedView = 
+    "  -----------------\n" + 
+    "8 |R| | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | |R|\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | |r| | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
+    assertFalse(p2.isCheckMate());
+    bytes.reset();
+  }
+
+  @Test
+  public void test_isCheckMate_canCapture(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("e8")));
+    b.tryAddPiece(new Rook("R", true, new Square("a8"), true));
+    b.tryAddPiece(new Rook("R", true, new Square("h7"), false));
+    b.tryAddPiece(new Rook("R", false, new Square("a4"), false));
+
+    ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+    TextPlayer p2 = this.createTextPlayer(false, b, "g2g1\nb\n", bytes);
+    
+    String expectedView;
+    expectedView = 
+    "  -----------------\n" + 
+    "8 |R| | | |k| | | |\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | | | |R|\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 |r| | | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
+    assertFalse(p2.isCheckMate());
+    bytes.reset();
+  }
+
+  @Test
+  public void test_isStaleMate_stalemate(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("h8")));
+    b.tryAddPiece(new Pawn("P", true, new Square("b3")));
+    b.tryAddPiece(new Pawn("P", false, new Square("b4")));
+    b.tryAddPiece(new Queen("Q", true, new Square("f7")));
+
+    Player p2 = new TextPlayer(false, b);
+
+    String expectedView = 
+    "  -----------------\n" + 
+    "8 | | | | | | | |k|\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | |Q| | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | |p| | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | |P| | | | | | |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
+    assertTrue(p2.isStaleMate());
+  }
+
+  @Test
+  public void test_isStaleMate_piecesCanMove(){
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    BoardTextView view = new BoardTextView(b);
+    b.tryAddPiece(new King("K", true, new Square("e1")));
+    b.tryAddPiece(new King("K", false, new Square("h8")));
+    b.tryAddPiece(new Pawn("P", true, new Square("b3")));
+    b.tryAddPiece(new Pawn("P", false, new Square("b4")));
+    b.tryAddPiece(new Queen("Q", true, new Square("f7")));
+    b.tryAddPiece(new Rook("R", false, new Square("g3"), true));
+
+    Player p2 = new TextPlayer(false, b);
+
+    String expectedView = 
+    "  -----------------\n" + 
+    "8 | | | | | | | |k|\n" + 
+    "  -----------------\n" + 
+    "7 | | | | | |Q| | |\n" +
+    "  -----------------\n" +
+    "6 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "5 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "4 | |p| | | | | | |\n" +
+    "  -----------------\n" +
+    "3 | |P| | | | |r| |\n" +
+    "  -----------------\n" +
+    "2 | | | | | | | | |\n" +
+    "  -----------------\n" +
+    "1 | | | | |K| | | |\n" +
+    "  -----------------\n" +
+    "   a b c d e f g h \n";
+    assertEquals(expectedView, view.displayBoard());
+    assertFalse(p2.isStaleMate());
   }
 }

@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class KingTest {
@@ -307,5 +308,43 @@ public class KingTest {
 
     assertEquals(expectedMoves, p.canMoveTo(b));
     assertTrue(b.getTeamPieces(true).contains(p));
+  }
+
+  /**
+   *  -----------------
+    8 |r|n| | | |r| | |
+      -----------------
+    7 |p|b|p|p|q| |p| |
+      -----------------
+    6 | |p| | |p|N| | |
+      -----------------
+    5 | | | | | | |k| |
+      -----------------
+    4 | | | |P| | |N|P|
+      -----------------
+    3 | | | |B| | | | |
+      -----------------
+    2 |P|P|P| | |P|P| |
+      -----------------
+    1 |R| | | |K| | |R|
+      -----------------
+       a b c d e f g h
+   */
+  @Test
+  @Disabled
+  public void test_canMoveTo_complicated(){
+    Piece p = new King("K", false, new Square("g5"));
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    b.tryAddPiece(p);
+    b.tryAddPiece(new Knight("K", true, new Square("f6")));
+    b.tryAddPiece(new Knight("K", true, new Square("g4")));
+    b.tryAddPiece(new Pawn("P", true, new Square("h4")));
+    b.tryAddPiece(new Bishop("B", true, new Square("d3")));
+    b.tryAddPiece(new Rook("R", true, new Square("h1"), true));
+    b.tryAddPiece(new Pawn("P", true, new Square("f2")));
+
+    HashSet<Square> expected = new HashSet<>();
+    expected.add(new Square("f4"));
+    assertEquals(expected, p.canMoveTo(b));
   }
 }

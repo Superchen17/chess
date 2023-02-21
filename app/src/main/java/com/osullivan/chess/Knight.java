@@ -30,4 +30,9 @@ public class Knight extends Piece{
     }
     return nextMoves;
   }
+
+  @Override
+  public HashSet<Square> canCaptureAt(Board board) {
+    return this.canMoveTo(board);
+  }
 }

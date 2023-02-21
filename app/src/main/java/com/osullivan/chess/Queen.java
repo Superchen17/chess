@@ -21,4 +21,9 @@ public class Queen extends Piece {
     nextMoves.addAll(this.canMoveDownRightDiagonalTo(board));
     return nextMoves;
   }
+
+  @Override
+  public HashSet<Square> canCaptureAt(Board board) {
+    return this.canMoveTo(board);
+  }
 }

@@ -110,5 +110,24 @@ public class Pawn extends Piece {
     }
 
     return nextMoves;
+  }
+
+  @Override
+  public HashSet<Square> canCaptureAt(Board board) {
+    int direction = this.isWhite ? 1 : -1;
+
+    HashSet<Square> nextMoves = new HashSet<>();
+    int currRow = this.square.getRow();
+    int currCol = this.square.getColumn();
+
+    Square nextMove = new Square(currRow + direction * 1, currCol - 1);
+    if(this.canCaptureOn(nextMove, board)){
+      nextMoves.add(nextMove);
+    }
+    nextMove = new Square(currRow + direction * 1, currCol + 1);
+    if(this.canCaptureOn(nextMove, board)){
+      nextMoves.add(nextMove);
+    }
+    return nextMoves;
   } 
 }
