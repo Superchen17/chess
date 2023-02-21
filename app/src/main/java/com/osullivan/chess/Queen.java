@@ -23,7 +23,7 @@ public class Queen extends Piece {
   }
 
   @Override
-  public HashSet<Square> canCaptureAt(Board board) {
+  public HashSet<Square> canCover(Board board) {
     return this.canMoveTo(board);
   }
 }

@@ -263,5 +263,12 @@ public abstract class Piece {
    */
   public abstract HashSet<Square> canMoveTo(Board board);
 
-  public abstract HashSet<Square> canCaptureAt(Board board);
+  /**
+   * get a set of squares that the piece can capture at
+   * same as canMoveTo for all piece except Pawn
+   * which can move forward, but capture on forward diagonals
+   * @param board
+   * @return
+   */
+  public abstract HashSet<Square> canCover(Board board);
 }

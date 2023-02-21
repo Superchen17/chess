@@ -25,7 +25,7 @@ public class Pawn extends Piece {
    * helper method for Pawn captures
    * @param square
    * @param board
-   * @return true if can capture
+   * @return true if has enemy piece to capture
    */
   private boolean canCaptureOn(Square square, Board board){
     if(board.isSquareOnBoard(square)){
@@ -112,22 +112,31 @@ public class Pawn extends Piece {
     return nextMoves;
   }
 
+  private boolean noSelfPieceAt(Square square, Board board){
+    Piece p = board.whatIsAtSquare(square);
+    if(p == null || p.isWhitePiece() != this.isWhite){
+      return true;
+    }
+    return false;
+  }
+
   @Override
-  public HashSet<Square> canCaptureAt(Board board) {
+  public HashSet<Square> canCover(Board board) {
     int direction = this.isWhite ? 1 : -1;
 
     HashSet<Square> nextMoves = new HashSet<>();
     int currRow = this.square.getRow();
     int currCol = this.square.getColumn();
-
+    
     Square nextMove = new Square(currRow + direction * 1, currCol - 1);
-    if(this.canCaptureOn(nextMove, board)){
+    if(this.noSelfPieceAt(nextMove, board)){
       nextMoves.add(nextMove);
     }
     nextMove = new Square(currRow + direction * 1, currCol + 1);
-    if(this.canCaptureOn(nextMove, board)){
+    if(this.noSelfPieceAt(nextMove, board)){
       nextMoves.add(nextMove);
     }
+
     return nextMoves;
   } 
 }

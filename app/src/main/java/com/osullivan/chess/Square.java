@@ -48,7 +48,7 @@ public class Square{
       throw new IllegalArgumentException("the square under cover check is not empty");
     }
     for(Piece teamPiece: board.getTeamPieces(isWhite)){
-      if(teamPiece.canMoveTo(board).contains(this)){
+      if(teamPiece.canCover(board).contains(this)){
         return true;
       }
     }

@@ -63,4 +63,10 @@ class AppTest {
     //https://www.chess.com/forum/view/game-showcase/fastest-stalemate-known-in-chess
     this.test_game("input_stalemate.txt", "output_stalemate.txt");
   }
+
+  @Test
+  public void test_castling_mate() throws IOException{
+    //https://www.chess.com/forum/view/game-showcase/fastest-stalemate-known-in-chess
+    this.test_game("input_castling_mate.txt", "output_castling_mate.txt");
+  }
 }

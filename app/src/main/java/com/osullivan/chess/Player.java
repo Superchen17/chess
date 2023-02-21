@@ -107,7 +107,7 @@ public abstract class Player {
 
   private boolean enemyCanAttack(Square square){
     for(Piece p: board.getTeamPieces(!this.isWhite)){
-      if(p.canMoveTo(board).contains(square)){
+      if(p.canCover(board).contains(square)){
         return true;
       }
     }
@@ -427,13 +427,6 @@ public abstract class Player {
     if(king.canMoveTo(this.board).size() > 0){
       return false;
     }
-
-    // for(Piece p: this.board.getTeamPieces(!this.isWhite)){
-    //   if(p.canMoveTo(board).contains(new Square("f4"))){
-    //     System.out.println(p);
-    //     System.out.println(p.getSquare());
-    //   }
-    // }
 
     if(this.stillHasLegalMoves()){
       return false;

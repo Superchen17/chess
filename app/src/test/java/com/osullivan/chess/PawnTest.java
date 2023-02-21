@@ -632,4 +632,44 @@ public class PawnTest {
 
     assertEquals(expectedMoves, p.canMoveTo(b));
   }
+
+  /**
+   *    -----------------
+      8 | | | | | | | | |
+        -----------------
+      7 | | | | | |p| | |
+        -----------------
+      6 | | | | | | | | |
+        -----------------
+      5 | | | | | | | | |
+        -----------------
+      4 | | | | | | | | |
+        -----------------
+      3 | | | | | |R| | |
+        -----------------
+      2 | | | | |P| | | |
+        -----------------
+      1 | | | | | | | | |
+        -----------------
+         a b c d e f g h 
+   */
+  @Test
+  public void test_canCover(){
+    Piece whiteP = new Pawn("P", true, new Square("e2"));
+    Piece blackP = new Pawn("P", false, new Square("f7"));
+
+    Board b = new ChessBoard(8, 8, new HashSet<>());
+    b.tryAddPiece(new Rook("R", true, new Square("f3"), true));
+    b.tryAddPiece(whiteP);
+    b.tryAddPiece(blackP);
+
+    HashSet<Square> expectedCoversWhite = new HashSet<>();
+    expectedCoversWhite.add(new Square("d3"));
+    assertEquals(expectedCoversWhite, whiteP.canCover(b));
+
+    HashSet<Square> expectedCoversBlack = new HashSet<>();
+    expectedCoversBlack.add(new Square("e6"));    
+    expectedCoversBlack.add(new Square("g6"));
+    assertEquals(expectedCoversBlack, blackP.canCover(b));
+  }
 }

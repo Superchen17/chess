@@ -5,7 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashSet;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class KingTest {
@@ -331,7 +330,6 @@ public class KingTest {
        a b c d e f g h
    */
   @Test
-  @Disabled
   public void test_canMoveTo_complicated(){
     Piece p = new King("K", false, new Square("g5"));
     Board b = new ChessBoard(8, 8, new HashSet<>());
