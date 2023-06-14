@@ -1,5 +1,7 @@
 # A Game Of Chess
 
+![demo.png](/images/demo.png "the text GUI")
+
 ## Requirements
 - Java 17
 - Gradle 7.3.3
